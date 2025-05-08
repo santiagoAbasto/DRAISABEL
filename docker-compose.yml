@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/app.Dockerfile
+    container_name: centro_estetico_app
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - "5173:5173"  # 👈 Añade esto
+    depends_on:
+      - db
+    
+  nginx:
+    image: nginx:alpine
+    container_name: centro_estetico_nginx
+    ports:
+      - "8010:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+
+  db:
+    image: postgres:16
+    container_name: centro_estetico_db
+    environment:
+      POSTGRES_DB: centro_estetico
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: centro_estetico_mailhog
+    ports:
+      - "8026:8025"
+
+volumes:
+  pgdata:
