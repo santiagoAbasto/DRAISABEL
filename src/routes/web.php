@@ -21,7 +21,7 @@ Route::get('/', function () {
 
 /*
 |--------------------------------------------------------------------------
-| Rutas para usuarios autenticados (perfil)
+| Perfil de Usuario (Autenticado)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
@@ -35,8 +35,14 @@ Route::middleware(['auth'])->group(function () {
 | Panel de Administración
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', fn () => Inertia::render('Admin/Dashboard'))->name('admin.dashboard');
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', fn () => Inertia::render('Admin/Dashboard'))->name('dashboard');
+
+    // Recursos del admin
+    Route::resource('tratamientos', \App\Http\Controllers\Admin\TratamientoController::class);
+    Route::resource('pacientes', \App\Http\Controllers\Admin\PacienteController::class);
+    Route::resource('cotizaciones', \App\Http\Controllers\Admin\CotizacionController::class);
+    Route::resource('sesiones', \App\Http\Controllers\Admin\SesionController::class); // ✅ NUEVO
 });
 
 /*
@@ -44,13 +50,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 | Panel del Cliente
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:cliente'])->group(function () {
-    Route::get('/cliente', fn () => Inertia::render('Cliente/Dashboard'))->name('cliente.dashboard');
+Route::middleware(['auth', 'role:cliente'])->prefix('cliente')->name('cliente.')->group(function () {
+    Route::get('/', fn () => Inertia::render('Cliente/Dashboard'))->name('dashboard');
 });
 
 /*
 |--------------------------------------------------------------------------
-| Rutas de autenticación (login, registro, etc.)
+| Autenticación (login, registro, etc.)
 |--------------------------------------------------------------------------
 */
 require __DIR__.'/auth.php';
