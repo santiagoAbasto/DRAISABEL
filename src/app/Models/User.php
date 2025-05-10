@@ -11,7 +11,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Atributos que se pueden asignar masivamente.
      *
      * @var array<int, string>
      */
@@ -19,11 +19,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // necesario si manejas roles
+        'role', // Requerido si se gestionan roles
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Atributos que deben ocultarse al serializar.
      *
      * @var array<int, string>
      */
@@ -33,7 +33,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
+     * Atributos que deben ser convertidos a tipos nativos.
      *
      * @var array<string, string>
      */
@@ -50,5 +50,15 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Relación uno a uno con un paciente (si el usuario es cliente).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function paciente()
+    {
+        return $this->hasOne(Paciente::class);
     }
 }

@@ -15,12 +15,13 @@ class Paciente extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'user_id',
         'nombre_completo',
         'rut',
         'telefono',
         'correo',
-        'edad',         // ✅ nuevo
-        'sexo',         // ✅ nuevo
+        'edad',
+        'sexo',
         'alergias',
         'historial_clinico',
         'notas',
@@ -28,6 +29,8 @@ class Paciente extends Model
 
     /**
      * Relación uno a muchos con sesiones del paciente.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function sesiones()
     {
@@ -36,9 +39,22 @@ class Paciente extends Model
 
     /**
      * Relación uno a muchos con citas del paciente.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function citas()
     {
         return $this->hasMany(Cita::class);
     }
+
+    /**
+     * Relación con el usuario (si el paciente tiene login).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
 }

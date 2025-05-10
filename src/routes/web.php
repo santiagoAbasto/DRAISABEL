@@ -42,11 +42,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('tratamientos', \App\Http\Controllers\Admin\TratamientoController::class);
     Route::resource('pacientes', \App\Http\Controllers\Admin\PacienteController::class);
     Route::resource('cotizaciones', \App\Http\Controllers\Admin\CotizacionController::class);
-    Route::resource('sesiones', \App\Http\Controllers\Admin\SesionController::class); // ✅ NUEVO
+    Route::resource('sesiones', \App\Http\Controllers\Admin\SesionController::class);
     Route::resource('citas', \App\Http\Controllers\Admin\CitaController::class);
     Route::get('citas-calendario', [\App\Http\Controllers\Admin\CitaController::class, 'calendario'])->name('citas.calendario');
-
-
 });
 
 /*

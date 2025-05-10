@@ -9,16 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('pacientes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade'); // 👈 importante
             $table->string('nombre_completo');
             $table->string('rut')->nullable();
             $table->string('telefono')->nullable();
             $table->string('correo')->nullable();
-            $table->unsignedTinyInteger('edad')->nullable(); // ✅ nuevo
-            $table->enum('sexo', ['masculino', 'femenino'])->nullable(); // ✅ nuevo
+            $table->integer('edad')->nullable();
+            $table->enum('sexo', ['masculino', 'femenino', 'otro'])->nullable();
             $table->text('alergias')->nullable();
             $table->text('historial_clinico')->nullable();
             $table->text('notas')->nullable();
