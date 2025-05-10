@@ -8,6 +8,14 @@ export default function Index({ tratamientos }) {
     }
   };
 
+  const formatoCLP = (valor) => {
+    return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
+      minimumFractionDigits: 0,
+    }).format(valor);
+  };
+
   return (
     <AdminLayout title="Tratamientos">
       <div className="flex justify-between items-center mb-6">
@@ -36,8 +44,8 @@ export default function Index({ tratamientos }) {
               tratamientos.map((tratamiento) => (
                 <tr key={tratamiento.id}>
                   <td className="px-4 py-2">{tratamiento.nombre}</td>
-                  <td className="px-4 py-2">{tratamiento.categoria}</td>
-                  <td className="px-4 py-2">${tratamiento.precio}</td>
+                  <td className="px-4 py-2 capitalize">{tratamiento.categoria}</td>
+                  <td className="px-4 py-2">{formatoCLP(tratamiento.precio)}</td>
                   <td className="px-4 py-2">{tratamiento.cantidad_sesiones ?? '—'}</td>
                   <td className="px-4 py-2 space-x-2">
                     <Link
@@ -57,7 +65,7 @@ export default function Index({ tratamientos }) {
               ))
             ) : (
               <tr>
-                <td className="px-4 py-2 text-center text-gray-500" colSpan="5">
+                <td className="px-4 py-4 text-center text-gray-500" colSpan="5">
                   No hay tratamientos registrados.
                 </td>
               </tr>

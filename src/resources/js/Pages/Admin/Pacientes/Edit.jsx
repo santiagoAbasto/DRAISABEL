@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import AdminLayout from '@/Layouts/TailAdminLayout'; // O '@/Layouts/AdminLayout'
+import AdminLayout from '@/Layouts/TailAdminLayout';
 
 export default function Edit({ paciente }) {
   const { data, setData, put, processing, errors } = useForm({
@@ -7,6 +7,8 @@ export default function Edit({ paciente }) {
     rut: paciente.rut || '',
     telefono: paciente.telefono || '',
     correo: paciente.correo || '',
+    edad: paciente.edad || '',
+    sexo: paciente.sexo || '',
     alergias: paciente.alergias || '',
     historial_clinico: paciente.historial_clinico || '',
     notas: paciente.notas || '',
@@ -62,6 +64,33 @@ export default function Edit({ paciente }) {
             onChange={(e) => setData('correo', e.target.value)}
           />
           {errors.correo && <p className="text-red-500 text-sm">{errors.correo}</p>}
+        </div>
+
+        <div>
+          <label className="block font-medium">Edad</label>
+          <input
+            type="number"
+            min="0"
+            max="120"
+            className="w-full border rounded px-3 py-2"
+            value={data.edad}
+            onChange={(e) => setData('edad', e.target.value)}
+          />
+          {errors.edad && <p className="text-red-500 text-sm">{errors.edad}</p>}
+        </div>
+
+        <div>
+          <label className="block font-medium">Sexo</label>
+          <select
+            className="w-full border rounded px-3 py-2"
+            value={data.sexo}
+            onChange={(e) => setData('sexo', e.target.value)}
+          >
+            <option value="">-- Seleccionar --</option>
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+          </select>
+          {errors.sexo && <p className="text-red-500 text-sm">{errors.sexo}</p>}
         </div>
 
         <div>

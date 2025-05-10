@@ -19,6 +19,8 @@ class Paciente extends Model
         'rut',
         'telefono',
         'correo',
+        'edad',         // ✅ nuevo
+        'sexo',         // ✅ nuevo
         'alergias',
         'historial_clinico',
         'notas',
@@ -26,12 +28,17 @@ class Paciente extends Model
 
     /**
      * Relación uno a muchos con sesiones del paciente.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function sesiones()
     {
         return $this->hasMany(Sesion::class);
     }
-}
 
+    /**
+     * Relación uno a muchos con citas del paciente.
+     */
+    public function citas()
+    {
+        return $this->hasMany(Cita::class);
+    }
+}

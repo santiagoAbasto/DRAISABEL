@@ -2,10 +2,11 @@ import React from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
 import {
   HomeIcon,
-  UserIcon,
-  CalendarDaysIcon,
-  ClipboardDocumentCheckIcon,
-  DocumentTextIcon
+  UsersIcon,
+  BeakerIcon,
+  CalendarIcon,
+  ReceiptPercentIcon,
+  ClockIcon
 } from '@heroicons/react/24/outline';
 
 export default function AdminLayout({ children }) {
@@ -13,10 +14,11 @@ export default function AdminLayout({ children }) {
 
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: HomeIcon },
-    { name: 'Pacientes', href: '/pacientes', icon: UserIcon },
-    { name: 'Tratamientos', href: '/tratamientos', icon: ClipboardDocumentCheckIcon },
-    { name: 'Agenda', href: '/agenda', icon: CalendarDaysIcon },
-    { name: 'Cotizaciones', href: '/cotizaciones', icon: DocumentTextIcon },
+    { name: 'Pacientes', href: '/admin/pacientes', icon: UsersIcon },
+    { name: 'Tratamientos', href: '/admin/tratamientos', icon: BeakerIcon },
+    { name: 'Agenda', href: '/admin/citas', icon: CalendarIcon },
+    { name: 'Cotizaciones', href: '/admin/cotizaciones', icon: ReceiptPercentIcon },
+    { name: 'Historial Sesiones', href: '/admin/sesiones', icon: ClockIcon },
   ];
 
   const currentPath = window.location.pathname;
@@ -86,7 +88,6 @@ export default function AdminLayout({ children }) {
           </div>
         </header>
 
-        {/* Content */}
         <main className="flex-1 p-6 overflow-y-auto bg-gray-50">{children}</main>
       </div>
     </div>

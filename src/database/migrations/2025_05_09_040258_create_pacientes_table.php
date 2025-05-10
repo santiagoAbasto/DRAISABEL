@@ -17,13 +17,15 @@ return new class extends Migration
             $table->string('rut')->nullable();
             $table->string('telefono')->nullable();
             $table->string('correo')->nullable();
+            $table->unsignedTinyInteger('edad')->nullable(); // ✅ nuevo
+            $table->enum('sexo', ['masculino', 'femenino'])->nullable(); // ✅ nuevo
             $table->text('alergias')->nullable();
             $table->text('historial_clinico')->nullable();
             $table->text('notas')->nullable();
             $table->timestamps();
         });
     }
-    
+
     /**
      * Reverse the migrations.
      */

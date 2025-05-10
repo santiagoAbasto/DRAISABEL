@@ -2,7 +2,7 @@ import { useForm } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/TailAdminLayout';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function Edit({ tratamiento }) {
+export default function Edit({ tratamiento, categorias }) {
   const { data, setData, put, processing, errors } = useForm({
     nombre: tratamiento.nombre || '',
     categoria: tratamiento.categoria || '',
@@ -37,15 +37,21 @@ export default function Edit({ tratamiento }) {
               {errors.nombre && <div className="invalid-feedback">{errors.nombre}</div>}
             </div>
 
-            {/* Categoría */}
+            {/* Categoría (dropdown) */}
             <div className="col-md-6">
               <label className="form-label">Categoría</label>
-              <input
-                type="text"
-                className={`form-control ${errors.categoria ? 'is-invalid' : ''}`}
+              <select
+                className={`form-select ${errors.categoria ? 'is-invalid' : ''}`}
                 value={data.categoria}
                 onChange={(e) => setData('categoria', e.target.value)}
-              />
+              >
+                <option value="">-- Seleccionar categoría --</option>
+                {categorias.map((cat, i) => (
+                  <option key={i} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
               {errors.categoria && <div className="invalid-feedback">{errors.categoria}</div>}
             </div>
 

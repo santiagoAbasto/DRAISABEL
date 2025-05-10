@@ -24,13 +24,15 @@ class PacienteController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre_completo' => 'required|string|max:255',
-            'rut'             => 'nullable|string|max:20',
-            'telefono'        => 'nullable|string|max:20',
-            'correo'          => 'nullable|email|max:255',
-            'alergias'        => 'nullable|string',
+            'nombre_completo'   => 'required|string|max:255',
+            'rut'               => 'nullable|string|max:20',
+            'telefono'          => 'nullable|string|max:20',
+            'correo'            => 'nullable|email|max:255',
+            'edad'              => 'nullable|integer|min:0|max:120', // ✅ nuevo
+            'sexo'              => 'nullable|in:masculino,femenino', // ✅ nuevo
+            'alergias'          => 'nullable|string',
             'historial_clinico' => 'nullable|string',
-            'notas'           => 'nullable|string',
+            'notas'             => 'nullable|string',
         ]);
 
         Paciente::create($validated);
@@ -48,13 +50,15 @@ class PacienteController extends Controller
     public function update(Request $request, Paciente $paciente)
     {
         $validated = $request->validate([
-            'nombre_completo' => 'required|string|max:255',
-            'rut'             => 'nullable|string|max:20',
-            'telefono'        => 'nullable|string|max:20',
-            'correo'          => 'nullable|email|max:255',
-            'alergias'        => 'nullable|string',
+            'nombre_completo'   => 'required|string|max:255',
+            'rut'               => 'nullable|string|max:20',
+            'telefono'          => 'nullable|string|max:20',
+            'correo'            => 'nullable|email|max:255',
+            'edad'              => 'nullable|integer|min:0|max:120', // ✅ nuevo
+            'sexo'              => 'nullable|in:masculino,femenino', // ✅ nuevo
+            'alergias'          => 'nullable|string',
             'historial_clinico' => 'nullable|string',
-            'notas'           => 'nullable|string',
+            'notas'             => 'nullable|string',
         ]);
 
         $paciente->update($validated);

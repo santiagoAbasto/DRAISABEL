@@ -9,6 +9,17 @@ use Inertia\Inertia;
 
 class TratamientoController extends Controller
 {
+    private array $categorias = [
+        'Bioestimuladores',
+        'Mesoterapia',
+        'Hilos tensores',
+        'Toxina botulínica',
+        'Armonización con ácido hialurónico',
+        'Rejuvenecimiento facial',
+        'Tratamientos reductivos',
+        'Tratamientos con energía plasmática',
+    ];
+
     public function index()
     {
         return Inertia::render('Admin/Tratamientos/Index', [
@@ -18,17 +29,19 @@ class TratamientoController extends Controller
 
     public function create()
     {
-        return Inertia::render('Admin/Tratamientos/Create');
+        return Inertia::render('Admin/Tratamientos/Create', [
+            'categorias' => $this->categorias
+        ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'categoria' => 'required|string|max:255',
-            'precio' => 'required|numeric|min:0',
+            'nombre'             => 'required|string|max:255',
+            'categoria'          => 'required|string|max:255',
+            'precio'             => 'required|numeric|min:0',
             'cantidad_sesiones' => 'nullable|integer|min:1',
-            'observaciones' => 'nullable|string',
+            'observaciones'      => 'nullable|string',
         ]);
 
         Tratamiento::create($validated);
@@ -39,18 +52,19 @@ class TratamientoController extends Controller
     public function edit(Tratamiento $tratamiento)
     {
         return Inertia::render('Admin/Tratamientos/Edit', [
-            'tratamiento' => $tratamiento
+            'tratamiento' => $tratamiento,
+            'categorias'  => $this->categorias
         ]);
     }
 
     public function update(Request $request, Tratamiento $tratamiento)
     {
         $validated = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'categoria' => 'required|string|max:255',
-            'precio' => 'required|numeric|min:0',
+            'nombre'             => 'required|string|max:255',
+            'categoria'          => 'required|string|max:255',
+            'precio'             => 'required|numeric|min:0',
             'cantidad_sesiones' => 'nullable|integer|min:1',
-            'observaciones' => 'nullable|string',
+            'observaciones'      => 'nullable|string',
         ]);
 
         $tratamiento->update($validated);

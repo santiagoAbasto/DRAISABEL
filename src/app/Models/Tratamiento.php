@@ -43,4 +43,14 @@ class Tratamiento extends Model
     {
         return $this->hasMany(Sesion::class);
     }
+
+    /**
+     * Relación uno a muchos con citas.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function citas()
+    {
+        return $this->hasMany(Cita::class);
+    }
 }

@@ -1,4 +1,4 @@
-import AdminLayout from '@/Layouts/TailAdminLayout'; // O '@/Layouts/AdminLayout'
+import AdminLayout from '@/Layouts/TailAdminLayout';
 import { Link, router } from '@inertiajs/react';
 
 export default function Index({ pacientes }) {
@@ -25,6 +25,8 @@ export default function Index({ pacientes }) {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-4 py-2 text-left font-medium">Nombre</th>
+              <th className="px-4 py-2 text-left font-medium">Edad</th> {/* nuevo */}
+              <th className="px-4 py-2 text-left font-medium">Sexo</th> {/* nuevo */}
               <th className="px-4 py-2 text-left font-medium">RUT</th>
               <th className="px-4 py-2 text-left font-medium">Teléfono</th>
               <th className="px-4 py-2 text-left font-medium">Correo</th>
@@ -36,6 +38,8 @@ export default function Index({ pacientes }) {
               pacientes.map((p) => (
                 <tr key={p.id}>
                   <td className="px-4 py-2">{p.nombre_completo}</td>
+                  <td className="px-4 py-2">{p.edad ?? '—'}</td> {/* nuevo */}
+                  <td className="px-4 py-2 capitalize">{p.sexo ?? '—'}</td> {/* nuevo */}
                   <td className="px-4 py-2">{p.rut ?? '—'}</td>
                   <td className="px-4 py-2">{p.telefono ?? '—'}</td>
                   <td className="px-4 py-2">{p.correo ?? '—'}</td>
@@ -57,7 +61,7 @@ export default function Index({ pacientes }) {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center text-gray-500 py-4">
+                <td colSpan="7" className="text-center text-gray-500 py-4">
                   No hay pacientes registrados.
                 </td>
               </tr>
