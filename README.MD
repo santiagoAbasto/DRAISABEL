@@ -26,38 +26,44 @@ git clone https://github.com/usuario/centro-estetico.git
 cd centro-estetico
 ```
 
-2. Levanta los servicios con Docker:
+2. Levanta los servicios base con Docker:
 
 ```bash
 docker-compose up -d --build
 ```
 
-3. Entra al contenedor `app`:
+3. Usa Node 24 (o Node 20/22 LTS) para el frontend:
+
+```bash
+nvm use
+```
+
+4. Instala dependencias frontend y corre Vite desde el host:
+
+```bash
+npm install
+npm run dev
+```
+
+5. Entra al contenedor `app`:
 
 ```bash
 docker exec -it centro_estetico_app bash
 ```
 
-4. Instala dependencias:
+6. Instala dependencias de PHP y configura Laravel:
 
 ```bash
 composer install
-npm install
-cp .env.example .env
-php artisan key:generate
 ```
 
-5. Ejecuta las migraciones y seeders:
+7. Ejecuta las migraciones y seeders:
 
 ```bash
 php artisan migrate --seed
 ```
 
-6. Corre Vite para frontend (desde dentro del contenedor):
-
-```bash
-npm run dev
-```
+Nota: en macOS, correr Vite dentro del contenedor puede producir errores `Resource deadlock avoided` o `Unknown system error -35` al leer archivos CSS/Blade. Por eso el flujo recomendado es dejar PHP/PostgreSQL en Docker y Vite en el host con Node 20/22/24.
 
 ---
 
@@ -72,6 +78,7 @@ npm run dev
 ## 🌐 Accede en el navegador
 
 - Backend: [http://localhost:8010](http://localhost:8010)
+- Frontend Vite: [http://localhost:5174](http://localhost:5174)
 - Mailhog: [http://localhost:8026](http://localhost:8026)
 
 ---

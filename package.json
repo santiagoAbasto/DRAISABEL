@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "dev": "npm run dev --prefix src -- --host 0.0.0.0",
+    "build": "npm run build --prefix src"
+  },
   "devDependencies": {
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",

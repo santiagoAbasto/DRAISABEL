@@ -15,13 +15,15 @@ class DatabaseSeeder extends Seeder
         // Si deseas crear usuarios de prueba con factory, descomenta esto:
         // User::factory(10)->create();
 
-        // Crea un usuario de prueba
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => bcrypt('password'), // agrega contraseña si lo usarás
-            'role' => 'admin', // opcional, si estás manejando roles
-        ]);
+        // Crea o actualiza un usuario de prueba para que el seeder sea idempotente
+        User::updateOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'password' => bcrypt('password'),
+                'role' => 'admin',
+            ]
+        );
 
         // Llamar a otros seeders
         $this->call([

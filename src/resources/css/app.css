@@ -1,3 +1,250 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+|--------------------------------------------------------------------------
+| Sistema visual — Dra. Isabel Piérola
+| Tokens centralizados. "Belleza natural con respaldo médico."
+|--------------------------------------------------------------------------
+*/
+:root {
+    /* Paleta de marca */
+    --ivory: #faf7f2;
+    --porcelain: #fffdfc;
+    --champagne: #e8d6c3;
+    --nude: #d7b7a8;
+    --blush: #f3ddd6;
+    --cocoa: #6e5147;
+    --espresso: #2c211e;
+    --sage: #b8c6b1;
+    --gold: #c8a46a;
+    --mist: #eee9e3;
+    --white: #ffffff;
+
+    /* Texto */
+    --ink: #2c211e; /* espresso — texto principal, contraste alto */
+    --ink-soft: #6e5147; /* cocoa — texto secundario */
+    --ink-muted: #8a7268; /* terciario, sobre fondo claro */
+
+    /* Radios */
+    --radius-sm: 12px;
+    --radius-md: 18px;
+    --radius-lg: 28px;
+    --radius-xl: 36px;
+    --radius-full: 999px;
+
+    /* Sombras suaves, nunca duras */
+    --shadow-soft: 0 20px 60px rgba(44, 33, 30, 0.08);
+    --shadow-card: 0 14px 40px rgba(44, 33, 30, 0.1);
+    --shadow-glow: 0 0 80px rgba(215, 183, 168, 0.32);
+
+    /* Capa z semántica */
+    --z-base: 1;
+    --z-sticky: 40;
+    --z-nav: 50;
+    --z-mobile-cta: 55;
+    --z-float: 60;
+    --z-drawer-backdrop: 70;
+    --z-drawer: 80;
+    --z-toast: 90;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        /* compensa la navbar sticky al saltar a anclas */
+        scroll-padding-top: 96px;
+    }
+
+    body {
+        background-color: var(--ivory);
+        color: var(--ink);
+        font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+
+    /* Titulares editoriales en serif */
+    h1,
+    h2,
+    h3,
+    .font-display {
+        font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+        text-wrap: balance;
+    }
+
+    p {
+        text-wrap: pretty;
+    }
+
+    /* Foco visible accesible y on-brand */
+    :focus-visible {
+        outline: 2px solid var(--gold);
+        outline-offset: 3px;
+        border-radius: 4px;
+    }
+
+    ::selection {
+        background: var(--nude);
+        color: var(--espresso);
+    }
+}
+
+@layer components {
+    /* Lienzo de papel: textura sutilísima para evitar el beige plano */
+    .paper-grain {
+        background-image: radial-gradient(
+                circle at 18% 12%,
+                rgba(215, 183, 168, 0.16),
+                transparent 42%
+            ),
+            radial-gradient(
+                circle at 86% 8%,
+                rgba(200, 164, 106, 0.1),
+                transparent 40%
+            );
+    }
+
+    /* Halo de piel/champagne para el hero y acentos */
+    .halo-skin {
+        background: radial-gradient(
+            60% 60% at 50% 40%,
+            rgba(243, 221, 214, 0.55),
+            rgba(250, 247, 242, 0) 70%
+        );
+    }
+
+    /* Vidrio muy sutil — uso puntual, nunca decorativo por defecto */
+    .glass {
+        background: rgba(255, 253, 252, 0.72);
+        backdrop-filter: blur(14px) saturate(120%);
+        -webkit-backdrop-filter: blur(14px) saturate(120%);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .hairline {
+        border-bottom: 1px solid rgba(110, 81, 71, 0.14);
+    }
+}
+
+@layer utilities {
+    .tracking-label {
+        letter-spacing: 0.18em;
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Scroll reveal — el contenido es visible por defecto.
+| El observador añade [data-reveal="in"] cuando entra en viewport.
+|--------------------------------------------------------------------------
+*/
+[data-reveal] {
+    opacity: 1;
+    transform: none;
+}
+
+/* Estado inicial solo cuando JS confirma soporte y marca el documento */
+html.js-reveal [data-reveal="out"] {
+    opacity: 0;
+    transform: translateY(22px);
+    filter: blur(6px);
+}
+
+html.js-reveal [data-reveal] {
+    transition:
+        opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Pulso elegante para el botón flotante de WhatsApp */
+@keyframes float-pulse {
+    0%,
+    100% {
+        box-shadow: 0 14px 40px rgba(44, 33, 30, 0.18),
+            0 0 0 0 rgba(184, 198, 177, 0.5);
+    }
+    50% {
+        box-shadow: 0 14px 40px rgba(44, 33, 30, 0.18),
+            0 0 0 14px rgba(184, 198, 177, 0);
+    }
+}
+
+/* Flotación lenta para las cards del hero */
+@keyframes soft-float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Entrada al cambiar de contenido (tabs / explorador de tratamientos) */
+@keyframes swap-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.animate-swap-in {
+    animation: swap-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-float-pulse {
+    animation: float-pulse 2.6s ease-in-out infinite;
+}
+
+.animate-soft-float {
+    animation: soft-float 6s ease-in-out infinite;
+}
+
+.animate-soft-float-slow {
+    animation: soft-float 8.5s ease-in-out infinite;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Accesibilidad: respetar prefers-reduced-motion en todo momento.
+|--------------------------------------------------------------------------
+*/
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    html.js-reveal [data-reveal="out"] {
+        opacity: 1;
+        transform: none;
+        filter: none;
+    }
+
+    html.js-reveal [data-reveal] {
+        transition: opacity 0.3s ease;
+    }
+
+    .animate-float-pulse,
+    .animate-soft-float,
+    .animate-soft-float-slow {
+        animation: none;
+    }
+
+    .animate-swap-in {
+        animation: none;
+    }
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+    }
+}
