@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Reveal from '@/Components/public/Reveal';
 import Button from '@/Components/public/Button';
 import Icon from '@/Components/public/Icon';
@@ -12,18 +13,29 @@ import { useScrollExpand, useParallax } from '@/hooks/useGsap';
 export default function Hero() {
     const photoRef = useScrollExpand({ from: 1.16 });
     const haloRef = useParallax({ distance: 48 });
+    const [videoReady, setVideoReady] = useState(false);
 
     return (
         <section className="relative overflow-hidden pt-28 sm:pt-32 lg:pt-36">
-            {/* Fondo cinemático: video ambiente con imagen poster de respaldo */}
+            {/* Fondo cinemático: el poster ES el primer fotograma del video, así
+                que el video aparece encima con un fundido invisible (sin saltos). */}
             <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                <img
+                    src="/media/hero-poster.jpg"
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-cover opacity-90"
+                />
                 <video
                     autoPlay
                     muted
                     loop
                     playsInline
-                    poster="/media/hero-ambient.jpg"
-                    className="h-full w-full object-cover opacity-90"
+                    preload="auto"
+                    onCanPlay={() => setVideoReady(true)}
+                    className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out ${
+                        videoReady ? 'opacity-90' : 'opacity-0'
+                    }`}
                 >
                     <source src="/media/hero.mp4" type="video/mp4" />
                 </video>

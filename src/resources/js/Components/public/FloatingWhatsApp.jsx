@@ -13,46 +13,55 @@ const GLYPH =
 /**
  * Botón flotante de WhatsApp — nivel senior.
  *
- * Bucles infinitos (flotación, anillos de pulso, punto "en línea") en CSS:
- * corren en el compositor e IGNORAN el re-render de React, por lo que el
- * parpadeo nunca se corta. framer-motion se reserva para la interacción
- * (entrada en spring, hover/tap y el mensaje proactivo).
- *
- * Al hover: el botón crece, el glifo gira, aparece un halo verde y la etiqueta
- * se desliza. Accesible (aria-label, foco visible, ≥44pt) y respeta
- * prefers-reduced-motion (las clases wa-* se desactivan por CSS).
+ * - Bucles infinitos (flotación, anillos de pulso, "en línea") en CSS:
+ *   inmunes al re-render de React, nunca parpadean.
+ * - Al pasar el cursor por el botón aparece el RECUADRO DE CHAT (spring), no
+ *   una simple etiqueta. También se muestra una vez automáticamente.
+ * - framer-motion solo para interacción (entrada, hover/tap, recuadro).
+ * - Accesible (aria-label, foco visible, ≥44pt) y respeta reduced-motion.
  */
 export default function FloatingWhatsApp() {
     const reduce = useReducedMotion();
-    const [showTeaser, setShowTeaser] = useState(false);
-    const [teaserClosed, setTeaserClosed] = useState(false);
+    const [hovering, setHovering] = useState(false);
+    const [autoOpen, setAutoOpen] = useState(false);
+    const [dismissed, setDismissed] = useState(false);
 
+    // Aparición automática una vez (para móvil / llamar la atención).
     useEffect(() => {
         if (reduce) return undefined;
-        const open = setTimeout(() => setShowTeaser(true), 4000);
-        const hide = setTimeout(() => setShowTeaser(false), 12000);
+        const open = setTimeout(() => setAutoOpen(true), 4500);
+        const hide = setTimeout(() => setAutoOpen(false), 12000);
         return () => {
             clearTimeout(open);
             clearTimeout(hide);
         };
     }, [reduce]);
 
+    const open = hovering || (autoOpen && !dismissed);
+
     return (
-        <div className="fixed bottom-24 right-4 z-[60] flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
-            {/* Mensaje proactivo (una vez) */}
+        <div
+            className="fixed bottom-24 right-4 z-[60] flex flex-col items-end gap-3 sm:bottom-6 sm:right-6"
+            onMouseEnter={() => setHovering(true)}
+            onMouseLeave={() => setHovering(false)}
+        >
+            {/* Recuadro de chat (al hover y una vez automático) */}
             <AnimatePresence>
-                {showTeaser && !teaserClosed && (
+                {open && (
                     <motion.div
-                        key="teaser"
-                        initial={{ opacity: 0, y: 16, scale: 0.92 }}
+                        key="chat"
+                        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 14, scale: 0.92 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.96, transition: { duration: 0.16 } }}
+                        exit={{ opacity: 0, y: 10, scale: 0.96, transition: { duration: 0.15 } }}
                         transition={{ type: 'spring', stiffness: 320, damping: 26 }}
-                        className="relative w-[16rem] origin-bottom-right rounded-2xl rounded-br-md bg-porcelain p-4 shadow-soft ring-1 ring-cocoa/10"
+                        className="relative w-[16.5rem] origin-bottom-right rounded-2xl rounded-br-md bg-porcelain p-4 shadow-soft ring-1 ring-cocoa/10"
                     >
                         <button
                             type="button"
-                            onClick={() => setTeaserClosed(true)}
+                            onClick={() => {
+                                setDismissed(true);
+                                setHovering(false);
+                            }}
                             aria-label="Cerrar mensaje"
                             className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-espresso text-ivory shadow-card transition-transform hover:scale-110"
                         >
@@ -78,21 +87,21 @@ export default function FloatingWhatsApp() {
                             </div>
                         </div>
 
-                        <p className="mt-3 text-sm leading-snug text-ink-soft">
-                            Hola, ¿te ayudamos a agendar tu evaluación?
+                        <p className="mt-3 rounded-xl rounded-tl-sm bg-mist/70 px-3 py-2 text-sm leading-snug text-ink">
+                            Hola, ¿te ayudamos a agendar tu evaluación? Respondemos en minutos.
                         </p>
 
                         <a
                             href={whatsappLink()}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="mt-3 flex w-full items-center justify-center gap-2 rounded-full py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                            className="mt-3 flex w-full items-center justify-center gap-2 rounded-full py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
                             style={{ background: WA }}
                         >
                             <svg viewBox="0 0 32 32" className="h-4 w-4" fill="currentColor" aria-hidden="true">
                                 <path d={GLYPH} />
                             </svg>
-                            Escríbenos por WhatsApp
+                            Iniciar conversación
                         </a>
                     </motion.div>
                 )}
@@ -112,13 +121,7 @@ export default function FloatingWhatsApp() {
                     transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.5 }}
                     whileHover={reduce ? undefined : { scale: 1.07 }}
                     whileTap={reduce ? undefined : { scale: 0.93 }}
-                    onHoverStart={() => setShowTeaser(false)}
                 >
-                    {/* Etiqueta al hover (desktop) */}
-                    <span className="pointer-events-none absolute right-full mr-3 hidden translate-x-3 whitespace-nowrap rounded-full bg-espresso px-4 py-2 text-sm font-medium text-ivory opacity-0 shadow-card transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:opacity-100 sm:block">
-                        Escríbenos por WhatsApp
-                    </span>
-
                     {/* Núcleo de tamaño fijo */}
                     <span className="relative grid h-14 w-14 place-items-center">
                         {/* Halo verde al hover */}
