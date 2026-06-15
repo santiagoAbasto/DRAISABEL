@@ -23,12 +23,14 @@ export default function Hero() {
                     loop
                     playsInline
                     poster="/media/hero-ambient.jpg"
-                    className="h-full w-full object-cover opacity-[0.34]"
+                    className="h-full w-full object-cover opacity-90"
                 >
                     <source src="/media/hero.mp4" type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-gradient-to-b from-ivory/60 via-ivory/85 to-ivory" />
-                <div className="absolute inset-0 bg-gradient-to-r from-ivory via-ivory/55 to-transparent" />
+                {/* Legibilidad del texto a la izquierda; el video se ve a la derecha */}
+                <div className="absolute inset-0 bg-gradient-to-r from-ivory via-ivory/70 to-transparent" />
+                {/* Fundido suave arriba y hacia el fondo de la página */}
+                <div className="absolute inset-0 bg-gradient-to-b from-ivory/10 via-transparent to-ivory" />
             </div>
 
             {/* Fondo: glow champagne (parallax) + grano sutil — centrado por margen
