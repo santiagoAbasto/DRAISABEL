@@ -11,17 +11,16 @@ const GLYPH =
     'M16 .5C7.4.5.5 7.4.5 16c0 2.8.7 5.4 2 7.7L.6 31.5l8-2.1c2.2 1.2 4.8 1.9 7.4 1.9 8.6 0 15.5-6.9 15.5-15.5S24.6.5 16 .5zm0 28.3c-2.4 0-4.7-.6-6.7-1.8l-.5-.3-4.7 1.3 1.3-4.6-.3-.5C4 20.8 3.3 18.4 3.3 16 3.3 9 9 3.3 16 3.3S28.7 9 28.7 16 23 28.8 16 28.8zm7.4-9.6c-.4-.2-2.4-1.2-2.7-1.3-.4-.1-.7-.2-.9.2-.3.4-1.1 1.3-1.3 1.5-.2.2-.5.3-.9.1-.4-.2-1.7-.6-3.2-2-1.2-1-2-2.4-2.2-2.8-.2-.4 0-.6.2-.8.2-.2.4-.5.6-.7.2-.2.2-.4.4-.6.1-.2 0-.5 0-.7-.1-.2-.9-2.2-1.3-3-.3-.8-.7-.7-.9-.7h-.8c-.3 0-.7.1-1 .5-.4.4-1.4 1.3-1.4 3.3s1.4 3.9 1.6 4.1c.2.3 2.8 4.3 6.8 6 .9.4 1.7.7 2.3.9.9.3 1.8.2 2.5.1.8-.1 2.4-1 2.7-1.9.3-.9.3-1.7.2-1.9-.1-.2-.4-.3-.8-.5z';
 
 /**
- * Botón flotante de WhatsApp — nivel senior, sin conflictos de animación.
+ * Botón flotante de WhatsApp — nivel senior.
  *
- * Responsabilidades separadas en distintos elementos para evitar que dos
- * animaciones peleen por la misma propiedad (la causa típica de "animación
- * rota" en framer-motion):
- *   - Envoltorio  → flotación continua (translateY, en bucle).
- *   - Enlace      → entrada en spring + hover/tap (scale).
- *   - Anillos     → pulso (scale/opacity, en bucle).
- *   - Glifo       → leve giro al hover (CSS, sin conflicto con framer).
+ * Bucles infinitos (flotación, anillos de pulso, punto "en línea") en CSS:
+ * corren en el compositor e IGNORAN el re-render de React, por lo que el
+ * parpadeo nunca se corta. framer-motion se reserva para la interacción
+ * (entrada en spring, hover/tap y el mensaje proactivo).
  *
- * Accesible (aria-label, foco visible, ≥44pt) y respeta prefers-reduced-motion.
+ * Al hover: el botón crece, el glifo gira, aparece un halo verde y la etiqueta
+ * se desliza. Accesible (aria-label, foco visible, ≥44pt) y respeta
+ * prefers-reduced-motion (las clases wa-* se desactivan por CSS).
  */
 export default function FloatingWhatsApp() {
     const reduce = useReducedMotion();
@@ -99,16 +98,9 @@ export default function FloatingWhatsApp() {
                 )}
             </AnimatePresence>
 
-            {/* Envoltorio: SOLO flotación continua (no compite con el scale del hover) */}
-            <motion.div
-                animate={reduce ? undefined : { y: [0, -7, 0] }}
-                transition={
-                    reduce
-                        ? undefined
-                        : { duration: 4.5, repeat: Infinity, ease: 'easeInOut' }
-                }
-            >
-                {/* Enlace: entrada + hover/tap (scale) */}
+            {/* Flotación continua (CSS, no se reinicia con los re-render) */}
+            <div className="wa-float">
+                {/* Interacción (framer): entrada + hover/tap */}
                 <motion.a
                     href={whatsappLink()}
                     target="_blank"
@@ -129,24 +121,20 @@ export default function FloatingWhatsApp() {
 
                     {/* Núcleo de tamaño fijo */}
                     <span className="relative grid h-14 w-14 place-items-center">
-                        {/* Anillos de pulso */}
-                        {!reduce &&
-                            [0, 1].map((i) => (
-                                <motion.span
-                                    key={i}
-                                    aria-hidden="true"
-                                    className="absolute h-14 w-14 rounded-full"
-                                    style={{ border: `2px solid ${WA}` }}
-                                    initial={{ scale: 1, opacity: 0.4 }}
-                                    animate={{ scale: 2.4, opacity: 0 }}
-                                    transition={{
-                                        duration: 2.8,
-                                        repeat: Infinity,
-                                        ease: 'easeOut',
-                                        delay: i * 1.4,
-                                    }}
-                                />
-                            ))}
+                        {/* Halo verde al hover */}
+                        <span
+                            aria-hidden="true"
+                            className="absolute inset-0 rounded-full opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-60"
+                            style={{ background: WA }}
+                        />
+
+                        {/* Anillos de pulso (CSS) */}
+                        {!reduce && (
+                            <>
+                                <span aria-hidden="true" className="wa-ripple absolute h-14 w-14 rounded-full" style={{ border: `2px solid ${WA}` }} />
+                                <span aria-hidden="true" className="wa-ripple-2 absolute h-14 w-14 rounded-full" style={{ border: `2px solid ${WA}` }} />
+                            </>
+                        )}
 
                         {/* Disco verde */}
                         <span
@@ -166,15 +154,13 @@ export default function FloatingWhatsApp() {
                                 <path d={GLYPH} />
                             </svg>
 
-                            {/* Indicador "en línea" */}
+                            {/* Indicador "en línea" (CSS) */}
                             <span className="absolute right-0.5 top-0.5 grid h-4 w-4 place-items-center">
                                 {!reduce && (
-                                    <motion.span
+                                    <span
                                         aria-hidden="true"
-                                        className="absolute inset-0 rounded-full"
+                                        className="wa-dot-pulse absolute inset-0 rounded-full"
                                         style={{ background: ONLINE }}
-                                        animate={{ scale: [1, 1.9], opacity: [0.6, 0] }}
-                                        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
                                     />
                                 )}
                                 <span
@@ -185,7 +171,7 @@ export default function FloatingWhatsApp() {
                         </span>
                     </span>
                 </motion.a>
-            </motion.div>
+            </div>
         </div>
     );
 }
