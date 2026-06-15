@@ -29,41 +29,22 @@ cd centro-estetico
 2. Levanta los servicios base con Docker:
 
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
-3. Usa Node 24 (o Node 20/22 LTS) para el frontend:
-
-```bash
-nvm use
-```
-
-4. Instala dependencias frontend y corre Vite desde el host:
-
-```bash
-npm install
-npm run dev
-```
-
-5. Entra al contenedor `app`:
+3. Entra al contenedor `app`:
 
 ```bash
 docker exec -it centro_estetico_app bash
 ```
 
-6. Instala dependencias de PHP y configura Laravel:
-
-```bash
-composer install
-```
-
-7. Ejecuta las migraciones y seeders:
+4. Ejecuta las migraciones y seeders:
 
 ```bash
 php artisan migrate --seed
 ```
 
-Nota: en macOS, correr Vite dentro del contenedor puede producir errores `Resource deadlock avoided` o `Unknown system error -35` al leer archivos CSS/Blade. Por eso el flujo recomendado es dejar PHP/PostgreSQL en Docker y Vite en el host con Node 20/22/24.
+Nota: el proyecto ya corre Vite dentro de Docker. No hace falta Node local.
 
 ---
 
@@ -80,6 +61,68 @@ Nota: en macOS, correr Vite dentro del contenedor puede producir errores `Resour
 - Backend: [http://localhost:8010](http://localhost:8010)
 - Frontend Vite: [http://localhost:5174](http://localhost:5174)
 - Mailhog: [http://localhost:8026](http://localhost:8026)
+
+---
+
+## ☁️ Exponer con Cloudflare Tunnel
+
+Si quieres publicar el proyecto desde Docker usando Cloudflare:
+
+1. Crea un túnel en Cloudflare Zero Trust y copia el `TUNNEL_TOKEN`.
+2. Crea tu archivo de variables:
+
+```bash
+cp .env.docker.example .env.docker
+```
+
+3. Coloca el token en `.env.docker`:
+
+```bash
+CLOUDFLARED_TOKEN=tu_token_aqui
+```
+
+4. Levanta el proyecto con el perfil de Cloudflare:
+
+```bash
+docker compose --env-file .env.docker --profile cloudflare up -d --build
+```
+
+El contenedor `cloudflared` publicará el servicio `nginx` del proyecto. Internamente apunta al puerto `80` del servicio `nginx`, que es el que sirve la app Laravel en Docker.
+
+### Compartir sin token
+
+Si solo quieres compartir el proyecto rápido y sin configurar una cuenta o token dentro del contenedor, puedes usar un Quick Tunnel de Cloudflare:
+
+```bash
+docker compose --profile share up -d
+```
+
+Luego mira la URL pública en los logs:
+
+```bash
+docker logs -f centro_estetico_cloudflared_quick
+```
+
+Cloudflare imprimirá una URL parecida a:
+
+```text
+https://algo-aleatorio.trycloudflare.com
+```
+
+Notas:
+
+- Esta URL es temporal.
+- Puede cambiar si reinicias el contenedor.
+- Sirve bien para demos y revisiones rápidas.
+- Si quieres un dominio fijo tuyo, ahí sí necesitas un túnel autenticado con Cloudflare.
+
+Cuando activas `share`, el proyecto compila assets estáticos y desactiva temporalmente el modo Vite HMR para que el enlace público no apunte a `localhost:5174`.
+
+Si luego quieres volver al modo de desarrollo con HMR local:
+
+```bash
+docker compose restart vite
+```
 
 ---
 

@@ -22,7 +22,10 @@ services:
       dockerfile: docker/app.Dockerfile
     container_name: centro_estetico_vite
     working_dir: /var/www/html
-    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+    command:
+      - sh
+      - -lc
+      - rm -f storage/framework/share-mode && npm run dev -- --host 0.0.0.0
     volumes:
       - app_code:/var/www/html
     ports:
@@ -60,6 +63,48 @@ services:
     container_name: centro_estetico_mailhog
     ports:
       - "8026:8025"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: centro_estetico_cloudflared
+    command: ["tunnel", "--no-autoupdate", "run", "--token", "${CLOUDFLARED_TOKEN:-}"]
+    depends_on:
+      nginx:
+        condition: service_started
+    profiles:
+      - cloudflare
+    restart: unless-stopped
+
+  cloudflared-quick:
+    image: cloudflare/cloudflared:latest
+    container_name: centro_estetico_cloudflared_quick
+    command: ["tunnel", "--no-autoupdate", "--url", "http://nginx:80"]
+    depends_on:
+      share-assets:
+        condition: service_completed_successfully
+      nginx:
+        condition: service_started
+    profiles:
+      - share
+    restart: unless-stopped
+
+  share-assets:
+    build:
+      context: .
+      dockerfile: docker/app.Dockerfile
+    container_name: centro_estetico_share_assets
+    working_dir: /var/www/html
+    command:
+      - sh
+      - -lc
+      - touch storage/framework/share-mode && rm -f public/hot && rm -rf public/build && npm run build && rm -f public/hot
+    volumes:
+      - app_code:/var/www/html
+    depends_on:
+      app:
+        condition: service_healthy
+    profiles:
+      - share
 
 volumes:
   pgdata:

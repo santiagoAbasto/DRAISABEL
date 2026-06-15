@@ -18,7 +18,9 @@
 
         <!-- Scripts -->
         @routes
-        @viteReactRefresh
+        @unless(is_file(storage_path('framework/share-mode')))
+            @viteReactRefresh
+        @endunless
         @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])
         @inertiaHead
     </head>
